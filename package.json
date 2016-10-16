@@ -2,7 +2,7 @@
   "name": "react-native-swipe-cards",
   "version": "0.0.9",
   "description": "Tinder style swipe cards for stylishly passing, failing a card",
-  "main": "SwipeCards.js",
+  "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

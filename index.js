@@ -131,9 +131,7 @@ class SwipeCards extends Component {
             ? this.props.handleYup(this.state.card)
             : this.props.handleNope(this.state.card)
 
-          this.props.cardRemoved
-            ? this.props.cardRemoved(this.props.cards.indexOf(this.state.card))
-            : null
+          this.cardRemoved();
 
           Animated.decay(this.state.pan, {
             velocity: {x: velocity, y: vy},
@@ -149,11 +147,29 @@ class SwipeCards extends Component {
     })
   }
 
+  _advanceState() {
+    this.state.pan.setValue({x: 0, y: 0});
+    this.state.enter.setValue(0);
+    this._animateEntrance();
+    this._goToNextCard();
+  }
+
+
   _resetState() {
     this.state.pan.setValue({x: 0, y: 0});
     this.state.enter.setValue(0);
     this._goToNextCard();
     this._animateEntrance();
+  }
+
+  cardRemoved = () => {
+    let currentCardIdx = this.props.cards.indexOf(this.state.card);
+    let currentLength = this.props.cards.length;
+    let remainingItems = currentLength - currentCardIdx;
+
+    if (this.props.cardRemoved) {
+      this.props.cardRemoved(remainingItems - 1);
+    }
   }
 
   renderNoMoreCards() {
@@ -167,6 +183,38 @@ class SwipeCards extends Component {
 
   renderCard(cardData) {
     return this.props.renderCard(cardData)
+  }
+
+  forceYup = () => {
+    this.cardAnimation = Animated.timing(this.state.pan, {
+      toValue: {x: 500, y: 0},
+    }).start( status => {
+        if (status.finished) {
+          this.props.handleYup ? this.props.handleYup(this.state.card) : null;
+          this._advanceState();
+        }
+        else this._resetState();
+
+        this.cardAnimation = null;
+      }
+    );
+    this.cardRemoved();
+  }
+
+  forceNope = () => {
+    this.cardAnimation = Animated.timing(this.state.pan, {
+      toValue: {x: -500, y: 0},
+    }).start( status => {
+        if (status.finished){
+          this.props.handleNope ? this.props.handleNope(this.state.card) : null;
+          this._advanceState();
+        }
+        else this._resetState();
+
+        this.cardAnimation = null;
+      }
+    );
+    this.cardRemoved();
   }
 
   render() {
@@ -245,6 +293,8 @@ SwipeCards.propTypes = {
     showNope: React.PropTypes.bool,
     handleYup: React.PropTypes.func,
     handleNope: React.PropTypes.func,
+    forceYup: React.PropTypes.func,
+    forceNope: React.PropTypes.func,
     yupView: React.PropTypes.element,
     yupText: React.PropTypes.string,
     noView: React.PropTypes.element,
