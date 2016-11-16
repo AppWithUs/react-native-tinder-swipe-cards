@@ -189,11 +189,8 @@ class SwipeCards extends Component {
     this.cardAnimation = Animated.timing(this.state.pan, {
       toValue: {x: 500, y: 0},
     }).start( status => {
-        if (status.finished) {
           this.props.handleYup ? this.props.handleYup(this.state.card) : null;
           this._advanceState();
-        }
-        else this._resetState();
 
         this.cardAnimation = null;
       }
@@ -205,11 +202,8 @@ class SwipeCards extends Component {
     this.cardAnimation = Animated.timing(this.state.pan, {
       toValue: {x: -500, y: 0},
     }).start( status => {
-        if (status.finished){
           this.props.handleNope ? this.props.handleNope(this.state.card) : null;
           this._advanceState();
-        }
-        else this._resetState();
 
         this.cardAnimation = null;
       }
